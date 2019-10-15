@@ -24,7 +24,7 @@ def getAngle(angle):
     """
     returns new angle based on supplied angle
     """
-    return angle + (math.pi / 6) * random.random() - (math.pi / 12)
+    return angle + ((math.pi / 6) * random.random() - (math.pi / 12))
 
 def drawSection(width, base_angle, angle, mid_x, y):
     """
@@ -32,12 +32,15 @@ def drawSection(width, base_angle, angle, mid_x, y):
     """
     t.color(TRUNK_COLOR)
 
-    x = mid_x + (SEC_LENGTH * math.tan(angle - base_angle))
+    x = mid_x + (SEC_LENGTH * math.sin(angle + base_angle))
+    y_p = y + (SEC_LENGTH * math.cos(angle + base_angle))
+    width_p = width - DAMP_FACTOR
+
     points = [
-        (mid_x - width * math.cos(base_angle), y - width * math.sin(base_angle)),
-        (mid_x + width * math.cos(base_angle), y + width * math.sin(base_angle)),
-        (x + width * math.cos(base_angle) - DAMP_FACTOR, y + SEC_LENGTH + width * math.sin(base_angle)),
-        (x - width * math.cos(base_angle) + DAMP_FACTOR, y + SEC_LENGTH - width * math.sin(base_angle))
+        (mid_x - width * math.cos(base_angle), y + width * math.sin(base_angle)),
+        (mid_x + width * math.cos(base_angle), y - width * math.sin(base_angle)),
+        (x + width_p * math.cos(base_angle), y_p - width_p * math.sin(base_angle)),
+        (x - width_p * math.cos(base_angle), y_p + width_p * math.sin(base_angle))
     ]
     t.penup()
     t.setpos(points[0][0], points[0][1])
@@ -45,7 +48,7 @@ def drawSection(width, base_angle, angle, mid_x, y):
     for point in points:
         t.setpos(point[0], point[1])
     t.end_fill()
-    return x
+    return x, y_p
 
 def drawStage():
     """
@@ -91,17 +94,30 @@ def drawTree(x, y, width, angle):
     drawing branches
     """
     base_angle = angle
+    max_angle = angle + math.pi / 4
+    min_angle = angle - math.pi / 4
     while width > 0:
-        x = drawSection(width, base_angle, angle, x, y)
-        y += SEC_LENGTH
+        x, y = drawSection(width, base_angle, angle, x, y)
         width -= DAMP_FACTOR
         angle = getAngle(angle)
-    drawLeaf(x, y, angle - base_angle)
-    t.done()
+        print(math.degrees(angle))
+        if angle < min_angle:
+            angle = min_angle
+        elif angle > max_angle:
+            angle = max_angle
+        gen_branch = random.random()
+        if 0 < gen_branch < 0.2:
+            drawTree(x, y, width / 2, angle + math.pi / 4)
+        elif 0.8 < gen_branch < 1:
+            drawTree(x, y, width / 2, angle - math.pi / 4)
+
+    drawLeaf(x, y, angle)
 
 def main():
     init()
-    drawTree(WIDTH / 2, 20, 20, math.radians(30))
+    drawTree(WIDTH / 2, 20, 20, 0)
+    t.hideturtle()
+    t.done()
 
 if __name__ == "__main__":
     main()
