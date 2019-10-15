@@ -5,7 +5,7 @@ import math
 WIDTH = 640
 HEIGHT = 480
 
-DAMP_FACTOR = 5
+DAMP_FACTOR = 1
 SEC_LENGTH = 20
 
 def init():
@@ -14,38 +14,33 @@ def init():
     t.setworldcoordinates(0, 0, WIDTH, HEIGHT)
     drawStage()
 
-def drawSection(width, angle, mid_x, mid_y):
+def getAngle(angle):
+    """
+    returns new angle based on supplied angle
+    """
+    return angle + (math.pi / 6) * random.random() - (math.pi / 12)
+
+def drawSection(width, angle, mid_x, y):
     """
     Assumes turtle is facing north
 
     returns new avg. x position and width
     """
 
-    print("Drawing section")
-
-    unit_width = width / 2
-    BLx = mid_x - unit_width
-    BLy = mid_y - (SEC_LENGTH / 2)
-    
-    TLx = BLx + (SEC_LENGTH * math.tan(angle - 5))
-    TLy = BLy + SEC_LENGTH
-    
-    BRx = mid_x + unit_width
-    BRy = mid_y - (SEC_LENGTH / 2)
-
-    TRx = BRx + (SEC_LENGTH * math.tan(angle + 5))
-    TRy = BRy + SEC_LENGTH
-
+    x = mid_x + (SEC_LENGTH * math.tan(angle))
+    points = [
+        (mid_x - width, y),
+        (mid_x + width, y),
+        (x + width - DAMP_FACTOR, y + SEC_LENGTH),
+        (x - width + DAMP_FACTOR, y + SEC_LENGTH)
+    ]
     t.penup()
-    t.setpos(BLx, BLy)
-    
-    t.pendown()
-    t.setpos(TLx, TLy)
-    t.setpos(TRx, TRy)
-    t.setpos(BRx, BRy)
-
-    return ((TRx + TRy) / 2, TRx - TLx)
-
+    t.setpos(points[0][0], points[0][1])
+    t.begin_fill()
+    for point in points:
+        t.setpos(point[0], point[1])
+    t.end_fill()
+    return x
 
 def drawStage():
     t.penup()
@@ -54,22 +49,18 @@ def drawStage():
     t.pendown()
     t.setpos(WIDTH - 20, 20)
 
-def drawTree():
+def drawTree(x, y, width, angle):
     print("drawing tree")
-    x = WIDTH / 2
-    y = 20 + (SEC_LENGTH / 2)
-    width = 20
-    angle = random.random() - 0.5
     while width > 0:
-        x, width = drawSection(width, angle, x, y)
+        x = drawSection(width, angle, x, y)
         y += SEC_LENGTH
-
-        angle += random.random() - 0.5
+        width -= DAMP_FACTOR
+        angle = getAngle(angle)
     t.done()
 
 def main():
     init()
-    drawTree()
+    drawTree(WIDTH / 2, 20, 20, getAngle(0))
 
 if __name__ == "__main__":
     main()
