@@ -49,6 +49,28 @@ def drawStage():
     t.pendown()
     t.setpos(WIDTH - 20, 20)
 
+def drawLeaf(x, y, angle):
+    print("drawing leaf")
+
+    leaf_len = 10
+    internal_angle = math.radians(30)
+    maj_axis = 2 * leaf_len * math.cos(internal_angle)
+    points = [
+        (x, y),
+        (x + leaf_len * math.sin(angle - internal_angle),
+            y + leaf_len * math.cos(angle - internal_angle)),
+        (x + maj_axis * math.sin(angle), y + maj_axis * math.cos(angle)),
+        (x + leaf_len * math.sin(angle + internal_angle),
+            y + leaf_len * math.cos(angle + internal_angle))
+    ]
+
+    t.penup()
+    t.setpos(points[0][0], points[0][1])
+    t.begin_fill()
+    for point in points:
+        t.setpos(point[0], point[1])
+    t.end_fill()
+
 def drawTree(x, y, width, angle):
     print("drawing tree")
     while width > 0:
@@ -56,6 +78,7 @@ def drawTree(x, y, width, angle):
         y += SEC_LENGTH
         width -= DAMP_FACTOR
         angle = getAngle(angle)
+    drawLeaf(x, y, angle)
     t.done()
 
 def main():
