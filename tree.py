@@ -8,6 +8,9 @@ HEIGHT = 480
 DAMP_FACTOR = 1
 SEC_LENGTH = 20
 
+TRUNK_COLOR = (random.random(), random.random(), random.random())
+LEAF_COLOR = (random.random(), random.random(), random.random())
+
 def init():
     """
     Initializes turtle settings and turtle window for the rest of program
@@ -27,6 +30,7 @@ def drawSection(width, angle, mid_x, y):
     """
     returns new avg. x position
     """
+    t.color(TRUNK_COLOR)
 
     x = mid_x + (SEC_LENGTH * math.tan(angle))
     points = [
@@ -58,7 +62,7 @@ def drawLeaf(x, y, angle):
     Draws a predefined leaf shape at the given x, y position and at the given
     angle.
     """
-    print("drawing leaf")
+    t.color(LEAF_COLOR)
 
     leaf_len = 10
     internal_angle = math.radians(30)
@@ -86,7 +90,6 @@ def drawTree(x, y, width, angle):
     Function uses recursive calls with changes to the angle as a way of
     drawing branches
     """
-    print("drawing tree")
     while width > 0:
         x = drawSection(width, angle, x, y)
         y += SEC_LENGTH
