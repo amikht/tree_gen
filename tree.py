@@ -15,7 +15,7 @@ def init():
     """
     Initializes turtle settings and turtle window for the rest of program
     """
-    t.speed(9)
+    t.speed(0)
     t.screensize(WIDTH, HEIGHT)
     t.setworldcoordinates(0, 0, WIDTH, HEIGHT)
     drawStage()
@@ -100,16 +100,17 @@ def drawTree(x, y, width, angle):
         x, y = drawSection(width, base_angle, angle, x, y)
         width -= DAMP_FACTOR
         angle = getAngle(angle)
-        print(math.degrees(angle))
+
         if angle < min_angle:
             angle = min_angle
         elif angle > max_angle:
             angle = max_angle
-        gen_branch = random.random()
-        if 0 < gen_branch < 0.2:
-            drawTree(x, y, width / 2, angle + math.pi / 4)
-        elif 0.8 < gen_branch < 1:
-            drawTree(x, y, width / 2, angle - math.pi / 4)
+        left_branch = random.random()
+        right_branch = random.random()
+        if 0 < left_branch < 0.4:
+            drawTree(x, y, width / 2, angle + math.pi / 6)
+        if 0 < right_branch < 0.4:
+            drawTree(x, y, width / 2, angle - math.pi / 6)
 
     drawLeaf(x, y, angle)
 
