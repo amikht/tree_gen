@@ -26,18 +26,18 @@ def getAngle(angle):
     """
     return angle + (math.pi / 6) * random.random() - (math.pi / 12)
 
-def drawSection(width, angle, mid_x, y):
+def drawSection(width, base_angle, angle, mid_x, y):
     """
     returns new avg. x position
     """
     t.color(TRUNK_COLOR)
 
-    x = mid_x + (SEC_LENGTH * math.tan(angle))
+    x = mid_x + (SEC_LENGTH * math.tan(angle - base_angle))
     points = [
-        (mid_x - width, y),
-        (mid_x + width, y),
-        (x + width - DAMP_FACTOR, y + SEC_LENGTH),
-        (x - width + DAMP_FACTOR, y + SEC_LENGTH)
+        (mid_x - width * math.cos(base_angle), y - width * math.sin(base_angle)),
+        (mid_x + width * math.cos(base_angle), y + width * math.sin(base_angle)),
+        (x + width * math.cos(base_angle) - DAMP_FACTOR, y + SEC_LENGTH + width * math.sin(base_angle)),
+        (x - width * math.cos(base_angle) + DAMP_FACTOR, y + SEC_LENGTH - width * math.sin(base_angle))
     ]
     t.penup()
     t.setpos(points[0][0], points[0][1])
@@ -90,17 +90,18 @@ def drawTree(x, y, width, angle):
     Function uses recursive calls with changes to the angle as a way of
     drawing branches
     """
+    base_angle = angle
     while width > 0:
-        x = drawSection(width, angle, x, y)
+        x = drawSection(width, base_angle, angle, x, y)
         y += SEC_LENGTH
         width -= DAMP_FACTOR
         angle = getAngle(angle)
-    drawLeaf(x, y, angle)
+    drawLeaf(x, y, angle - base_angle)
     t.done()
 
 def main():
     init()
-    drawTree(WIDTH / 2, 20, 20, 0)
+    drawTree(WIDTH / 2, 20, 20, math.radians(30))
 
 if __name__ == "__main__":
     main()
