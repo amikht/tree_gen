@@ -9,6 +9,9 @@ DAMP_FACTOR = 1
 SEC_LENGTH = 20
 
 def init():
+    """
+    Initializes turtle settings and turtle window for the rest of program
+    """
     t.speed(9)
     t.screensize(WIDTH, HEIGHT)
     t.setworldcoordinates(0, 0, WIDTH, HEIGHT)
@@ -22,9 +25,7 @@ def getAngle(angle):
 
 def drawSection(width, angle, mid_x, y):
     """
-    Assumes turtle is facing north
-
-    returns new avg. x position and width
+    returns new avg. x position
     """
 
     x = mid_x + (SEC_LENGTH * math.tan(angle))
@@ -43,6 +44,9 @@ def drawSection(width, angle, mid_x, y):
     return x
 
 def drawStage():
+    """
+    Draws the ground for the tree to live on
+    """
     t.penup()
     t.left(90)
     t.setpos(20, 20)
@@ -50,6 +54,10 @@ def drawStage():
     t.setpos(WIDTH - 20, 20)
 
 def drawLeaf(x, y, angle):
+    """
+    Draws a predefined leaf shape at the given x, y position and at the given
+    angle.
+    """
     print("drawing leaf")
 
     leaf_len = 10
@@ -72,6 +80,12 @@ def drawLeaf(x, y, angle):
     t.end_fill()
 
 def drawTree(x, y, width, angle):
+    """
+    Draws a tree growing from (x, y) with defined starting width.
+    Provided angle is the base angle for the rest of the tree.
+    Function uses recursive calls with changes to the angle as a way of
+    drawing branches
+    """
     print("drawing tree")
     while width > 0:
         x = drawSection(width, angle, x, y)
@@ -83,7 +97,7 @@ def drawTree(x, y, width, angle):
 
 def main():
     init()
-    drawTree(WIDTH / 2, 20, 20, getAngle(0))
+    drawTree(WIDTH / 2, 20, 20, 0)
 
 if __name__ == "__main__":
     main()
