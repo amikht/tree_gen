@@ -1,23 +1,35 @@
 import turtle as t
 import random
 import math
+import time
 
 WIDTH = 640
 HEIGHT = 480
 
-DAMP_FACTOR = 1
-SEC_LENGTH = 20
+DAMP_FACTOR = random.random() + 0.25
+SEC_LENGTH = random.randint(5, 20)
+BRANCHING = random.random() * 0.5 + 0.1
+
+BRANCH_ANGLE = random.random() * (math.pi / 3)
+BRANCH_DAMP = random.random() * 0.5 + 0.25
 
 TRUNK_COLOR = (random.random(), random.random(), random.random())
 LEAF_COLOR = (random.random(), random.random(), random.random())
+
+INIT_WIDTH = random.randint(5, 50)
 
 def init():
     """
     Initializes turtle settings and turtle window for the rest of program
     """
-    t.speed(0)
+    t.tracer(0)
     t.screensize(WIDTH, HEIGHT)
     t.setworldcoordinates(0, 0, WIDTH, HEIGHT)
+    drawStage()
+
+def reset():
+    t.clear()
+    t.showturtle()
     drawStage()
 
 def getAngle(angle):
@@ -107,18 +119,22 @@ def drawTree(x, y, width, angle):
             angle = max_angle
         left_branch = random.random()
         right_branch = random.random()
-        if 0 < left_branch < 0.4:
-            drawTree(x, y, width / 2, angle + math.pi / 6)
-        if 0 < right_branch < 0.4:
-            drawTree(x, y, width / 2, angle - math.pi / 6)
+        if 0 < left_branch < BRANCHING:
+            drawTree(x, y, width * BRANCH_DAMP, angle + BRANCH_ANGLE)
+        if 0 < right_branch < BRANCHING:
+            drawTree(x, y, width * BRANCH_DAMP, angle - BRANCH_ANGLE)
 
     drawLeaf(x, y, angle)
 
 def main():
     init()
-    drawTree(WIDTH / 2, 20, 20, 0)
-    t.hideturtle()
-    t.done()
+    while True:
+        reset()
+        drawTree(WIDTH / 2, 20, INIT_WIDTH, 0)
+        t.hideturtle()
+        t.update()
+        print("turtle updated")
+        time.sleep(3)
 
 if __name__ == "__main__":
     main()
