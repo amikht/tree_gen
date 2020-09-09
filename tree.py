@@ -6,10 +6,10 @@ import time
 WIDTH = 640
 HEIGHT = 480
 
-def getTreeFactors():
-    DAMP_FACTOR = random.random() * 1.75 + 0.25 
+def get_random_tree_factors():
+    DAMP_FACTOR = random.random() * 1.5 + 0.5
     SEC_LENGTH = random.randint(5, 20)
-    BRANCH_FACTOR = random.random() * 0.69 + 0.01
+    BRANCH_FACTOR = random.random() * 0.55 + 0.1
 
     BRANCH_ANGLE = random.random() * (math.pi / 3) + math.pi / 24
     BRANCH_DAMP = random.random() * 0.5 + 0.25
@@ -38,20 +38,20 @@ def init():
     t.tracer(0)
     t.screensize(WIDTH, HEIGHT)
     t.setworldcoordinates(0, 0, WIDTH, HEIGHT)
-    drawStage()
+    draw_stage()
 
 def reset():
     t.clear()
     t.showturtle()
-    drawStage()
+    draw_stage()
 
-def getAngle(angle):
+def get_adjusted_angle(angle):
     """
     returns new angle based on supplied angle
     """
     return angle + ((math.pi / 6) * random.random() - (math.pi / 12))
 
-def drawSection(width, base_angle, angle, mid_x, y, factors):
+def draw_section(width, base_angle, angle, mid_x, y, factors):
     """
     returns new avg. x position
     """
@@ -75,7 +75,7 @@ def drawSection(width, base_angle, angle, mid_x, y, factors):
     t.end_fill()
     return x, y_p
 
-def drawStage():
+def draw_stage():
     """
     Draws the ground for the tree to live on
     """
@@ -85,7 +85,7 @@ def drawStage():
     t.pendown()
     t.setpos(WIDTH - 20, 20)
 
-def drawLeaf(x, y, angle, color):
+def draw_leaf(x, y, angle, color):
     """
     Draws a predefined leaf shape at the given x, y position and at the given
     angle.
@@ -111,7 +111,7 @@ def drawLeaf(x, y, angle, color):
         t.setpos(point[0], point[1])
     t.end_fill()
 
-def drawTree(x, y, width, angle, tree_factors):
+def draw_tree(x, y, width, angle, tree_factors):
     """
     Draws a tree growing from (x, y) with defined starting width.
     Provided angle is the base angle for the rest of the tree.
@@ -121,31 +121,32 @@ def drawTree(x, y, width, angle, tree_factors):
     base_angle = angle
     max_angle = angle + math.pi / 4
     min_angle = angle - math.pi / 4
-    while width > 0:
-        x, y = drawSection(width, base_angle, angle, x, y, tree_factors)
-        width -= tree_factors["damp_factor"]
-        angle = getAngle(angle)
+    if (x > 0 and x < WIDTH and y > 0 and y < HEIGHT):
+        while width > 0:
+            x, y = draw_section(width, base_angle, angle, x, y, tree_factors)
+            width -= tree_factors["damp_factor"]
+            angle = get_adjusted_angle(angle)
 
-        if angle < min_angle:
-            angle = min_angle
-        elif angle > max_angle:
-            angle = max_angle
-        if (y > 20) and (y < HEIGHT) and (x > 0) and (x < WIDTH):
-            left_branch = random.random()
-            right_branch = random.random()
-            if 0 < left_branch < tree_factors["branch_factor"]:
-                drawTree(x, y, width * tree_factors["branch_damp"], angle + tree_factors["branch_angle"], tree_factors)
-            if 0 < right_branch < tree_factors["branch_factor"]:
-                drawTree(x, y, width * tree_factors["branch_damp"], angle - tree_factors["branch_angle"], tree_factors)
+            if angle < min_angle:
+                angle = min_angle
+            elif angle > max_angle:
+                angle = max_angle
+            if (y > 20) and (y < HEIGHT) and (x > 0) and (x < WIDTH):
+                left_branch = random.random()
+                right_branch = random.random()
+                if 0 < left_branch < tree_factors["branch_factor"]:
+                    draw_tree(x, y, width * tree_factors["branch_damp"], angle + tree_factors["branch_angle"], tree_factors)
+                if 0 < right_branch < tree_factors["branch_factor"]:
+                    draw_tree(x, y, width * tree_factors["branch_damp"], angle - tree_factors["branch_angle"], tree_factors)
 
-    drawLeaf(x, y, angle, tree_factors["leaf_color"])
+    draw_leaf(x, y, angle, tree_factors["leaf_color"])
 
 def main():
     init()
     while True:
         reset()
-        factors = getTreeFactors()
-        drawTree(WIDTH / 2, 20, factors["init_width"], 0, factors)
+        factors = get_random_tree_factors()
+        draw_tree(WIDTH / 2, 20, factors["init_width"], 0, factors)
         t.hideturtle()
         t.update()
         print("turtle updated")
